@@ -51,13 +51,13 @@ function Background(game, spritesheet) {
 
 Background.prototype.draw = function () {
     this.ctx.drawImage(this.spritesheet,
-                   this.x, this.y);
+                   this.x, this.y, 800, 700);
 };
 
 Background.prototype.update = function () {
 };
 
-function MushroomDude(game, spritesheet) {
+/*function MushroomDude(game, spritesheet) {
     this.animation = new Animation(spritesheet, 189, 230, 5, 0.10, 14, true, 1);
     this.x = 0;
     this.y = 0;
@@ -97,10 +97,39 @@ Cheetah.prototype.update = function () {
 Cheetah.prototype.draw = function () {
     this.animation.drawFrame(this.game.clockTick, this.ctx, this.x, this.y);
     Entity.prototype.draw.call(this);
-}
+}*/
+
+
+
 
 // inheritance 
-function Guy(game, spritesheet) {
+function Cartwheel(game, spritesheet) {
+    this.animation = new Animation(spritesheet, 221, 212, 5, 0.05, 20, true, 1);
+    this.speed = 150;
+    this.ctx = game.ctx;
+    Entity.call(this, game, 0, 450);
+}
+
+Cartwheel.prototype = new Entity();
+Cartwheel.prototype.constructor = Cartwheel;
+
+Cartwheel.prototype.update = function () {
+    this.x += this.game.clockTick * this.speed;
+    if (this.x > 800) this.x = -230;
+    Entity.prototype.update.call(this);
+}
+
+Cartwheel.prototype.draw = function () {
+    this.animation.drawFrame(this.game.clockTick, this.ctx, this.x, this.y);
+    Entity.prototype.draw.call(this);
+}
+
+
+
+
+
+// inheritance 
+/*function Guy(game, spritesheet) {
     this.animation = new Animation(spritesheet, 154, 215, 4, 0.15, 8, true, 0.5);
     this.speed = 100;
     this.ctx = game.ctx;
@@ -119,7 +148,7 @@ Guy.prototype.update = function () {
 Guy.prototype.draw = function () {
     this.animation.drawFrame(this.game.clockTick, this.ctx, this.x, this.y);
     Entity.prototype.draw.call(this);
-}
+}*/
 
 
 AM.queueDownload("./img/RobotUnicorn.png");
@@ -127,6 +156,8 @@ AM.queueDownload("./img/guy.jpg");
 AM.queueDownload("./img/mushroomdude.png");
 AM.queueDownload("./img/runningcat.png");
 AM.queueDownload("./img/background.jpg");
+AM.queueDownload("./img/background0.png");
+AM.queueDownload("./img/Cartwheel.png");
 
 AM.downloadAll(function () {
     var canvas = document.getElementById("gameWorld");
@@ -136,10 +167,11 @@ AM.downloadAll(function () {
     gameEngine.init(ctx);
     gameEngine.start();
 
-    gameEngine.addEntity(new Background(gameEngine, AM.getAsset("./img/background.jpg")));
-    gameEngine.addEntity(new MushroomDude(gameEngine, AM.getAsset("./img/mushroomdude.png")));
-    gameEngine.addEntity(new Cheetah(gameEngine, AM.getAsset("./img/runningcat.png")));
-    gameEngine.addEntity(new Guy(gameEngine, AM.getAsset("./img/guy.jpg")));
+    gameEngine.addEntity(new Background(gameEngine, AM.getAsset("./img/background0.png")));
+    //gameEngine.addEntity(new MushroomDude(gameEngine, AM.getAsset("./img/mushroomdude.png")));
+    //gameEngine.addEntity(new Cheetah(gameEngine, AM.getAsset("./img/runningcat.png")));
+    //gameEngine.addEntity(new Guy(gameEngine, AM.getAsset("./img/guy.jpg")));
+	gameEngine.addEntity(new Cartwheel(gameEngine, AM.getAsset("./img/Cartwheel.png")));
 
     console.log("All Done!");
 });
