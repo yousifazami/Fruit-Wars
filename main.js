@@ -1,4 +1,30 @@
 var AM = new AssetManager();
+function arrAnimation(spritesArray, frameDuration, loop, scale){
+	this.spritesArray = spritesArray;
+	this.frameDuration = frameDuration;
+	this.loop = loop;
+	this.scale = scale;
+	this.totalTime = frameDuration * spritesArray.length;
+	this.elapsedTime = 0;
+}
+
+arrAnimation.prototype.drawFrame = function (tick, ctx, x, y) {
+	this.elapsedTime += tick;
+    if (this.isDone()) {
+        if (this.loop) this.elapsedTime = 0;
+    }
+    var frame = this.currentFrame();
+	var image = this.spritesArray[frame];
+    ctx.drawImage(image, x, y, image.width*this.scale, image.height*this.scale);
+}
+
+arrAnimation.prototype.currentFrame = function () {
+    return Math.floor(this.elapsedTime / this.frameDuration);
+}
+
+arrAnimation.prototype.isDone = function () {
+    return (this.elapsedTime >= this.totalTime);
+}
 
 function Animation(spriteSheet, frameWidth, frameHeight, sheetWidth, frameDuration, frames, loop, scale) {
     this.spriteSheet = spriteSheet;
@@ -57,121 +83,256 @@ Background.prototype.draw = function () {
 Background.prototype.update = function () {
 };
 
-/*function MushroomDude(game, spritesheet) {
-    this.animation = new Animation(spritesheet, 189, 230, 5, 0.10, 14, true, 1);
-    this.x = 0;
-    this.y = 0;
-    this.speed = 100;
-    this.game = game;
-    this.ctx = game.ctx;
-}
-
-MushroomDude.prototype.draw = function () {
-    this.animation.drawFrame(this.game.clockTick, this.ctx, this.x, this.y);
-}
-
-MushroomDude.prototype.update = function () {
-    if (this.animation.elapsedTime < this.animation.totalTime * 8 / 14)
-        this.x += this.game.clockTick * this.speed;
-    if (this.x > 800) this.x = -230;
-}
 
 
 // inheritance 
-function Cheetah(game, spritesheet) {
-    this.animation = new Animation(spritesheet, 512, 256, 2, 0.05, 8, true, 0.5);
-    this.speed = 350;
+function explosion(game, spritesheetArray) {
+	this.animation = new arrAnimation(spritesheetArray, .02, true, 2);
+    this.speed = 0;
+    this.ctx = game.ctx;
+    Entity.call(this, game, 720, 458);
+}
+
+explosion.prototype = new Entity();
+explosion.prototype.constructor = explosion;
+
+explosion.prototype.update = function () {
+    this.x += this.game.clockTick * this.speed;
+    if (this.x > 800) this.x = -230;
+    Entity.prototype.update.call(this);
+}
+
+explosion.prototype.draw = function () {
+    this.animation.drawFrame(this.game.clockTick, this.ctx, this.x, this.y);
+    Entity.prototype.draw.call(this);
+}
+
+
+
+// inheritance 
+function ninja(game, spritesheetArray) {
+	this.animation = new arrAnimation(spritesheetArray, .01, true, .25);
+    this.speed = 250;
     this.ctx = game.ctx;
     Entity.call(this, game, 0, 250);
 }
 
-Cheetah.prototype = new Entity();
-Cheetah.prototype.constructor = Cheetah;
+ninja.prototype = new Entity();
+ninja.prototype.constructor = ninja;
 
-Cheetah.prototype.update = function () {
+ninja.prototype.update = function () {
     this.x += this.game.clockTick * this.speed;
     if (this.x > 800) this.x = -230;
     Entity.prototype.update.call(this);
 }
 
-Cheetah.prototype.draw = function () {
+ninja.prototype.draw = function () {
     this.animation.drawFrame(this.game.clockTick, this.ctx, this.x, this.y);
     Entity.prototype.draw.call(this);
-}*/
-
-
+}
 
 
 // inheritance 
-function Cartwheel(game, spritesheet) {
-    this.animation = new Animation(spritesheet, 221, 212, 5, 0.05, 20, true, 1);
-    this.speed = 150;
+function tninja(game, spritesheetArray) {
+	this.animation = new arrAnimation(spritesheetArray, .1, true, .25);
+    this.speed = 0;
     this.ctx = game.ctx;
-    Entity.call(this, game, 0, 450);
+    Entity.call(this, game, 0, 425);
 }
 
-Cartwheel.prototype = new Entity();
-Cartwheel.prototype.constructor = Cartwheel;
+tninja.prototype = new Entity();
+tninja.prototype.constructor = tninja;
 
-Cartwheel.prototype.update = function () {
+tninja.prototype.update = function () {
     this.x += this.game.clockTick * this.speed;
     if (this.x > 800) this.x = -230;
     Entity.prototype.update.call(this);
 }
 
-Cartwheel.prototype.draw = function () {
+tninja.prototype.draw = function () {
     this.animation.drawFrame(this.game.clockTick, this.ctx, this.x, this.y);
     Entity.prototype.draw.call(this);
 }
-
-
-
-
 
 // inheritance 
-/*function Guy(game, spritesheet) {
-    this.animation = new Animation(spritesheet, 154, 215, 4, 0.15, 8, true, 0.5);
-    this.speed = 100;
+function rocket(game, spritesheetArray) {
+	this.animation = new arrAnimation(spritesheetArray, .005, true, 3);
+    this.speed = 600;
     this.ctx = game.ctx;
-    Entity.call(this, game, 0, 450);
+    Entity.call(this, game, 0, 475);
 }
 
-Guy.prototype = new Entity();
-Guy.prototype.constructor = Guy;
+rocket.prototype = new Entity();
+rocket.prototype.constructor = rocket;
 
-Guy.prototype.update = function () {
+rocket.prototype.update = function () {
     this.x += this.game.clockTick * this.speed;
-    if (this.x > 800) this.x = -230;
+    if (this.x > 650) this.x = 50;
     Entity.prototype.update.call(this);
 }
 
-Guy.prototype.draw = function () {
-    this.animation.drawFrame(this.game.clockTick, this.ctx, this.x, this.y);
-    Entity.prototype.draw.call(this);
-}*/
+rocket.prototype.draw = function () {
+		this.animation.drawFrame(this.game.clockTick, this.ctx, this.x, this.y);
+		Entity.prototype.draw.call(this);
+}
 
+AM.queueDownload("./img/explosion/expl_07_0000.png");
+AM.queueDownload("./img/explosion/expl_07_0001.png");
+AM.queueDownload("./img/explosion/expl_07_0002.png");
+AM.queueDownload("./img/explosion/expl_07_0003.png");
+AM.queueDownload("./img/explosion/expl_07_0004.png");
+AM.queueDownload("./img/explosion/expl_07_0005.png");
+AM.queueDownload("./img/explosion/expl_07_0006.png");
+AM.queueDownload("./img/explosion/expl_07_0007.png");
+AM.queueDownload("./img/explosion/expl_07_0008.png");
+AM.queueDownload("./img/explosion/expl_07_0009.png");
+AM.queueDownload("./img/explosion/expl_07_0010.png");
+AM.queueDownload("./img/explosion/expl_07_0011.png");
+AM.queueDownload("./img/explosion/expl_07_0012.png");
+AM.queueDownload("./img/explosion/expl_07_0013.png");
+AM.queueDownload("./img/explosion/expl_07_0014.png");
+AM.queueDownload("./img/explosion/expl_07_0015.png");
+AM.queueDownload("./img/explosion/expl_07_0016.png");
+AM.queueDownload("./img/explosion/expl_07_0017.png");
+AM.queueDownload("./img/explosion/expl_07_0018.png");
+AM.queueDownload("./img/explosion/expl_07_0019.png");
+AM.queueDownload("./img/explosion/expl_07_0020.png");
+AM.queueDownload("./img/explosion/expl_07_0021.png");
+AM.queueDownload("./img/explosion/expl_07_0022.png");
+AM.queueDownload("./img/explosion/expl_07_0023.png");
+AM.queueDownload("./img/explosion/expl_07_0024.png");
+AM.queueDownload("./img/explosion/expl_07_0025.png");
+AM.queueDownload("./img/explosion/expl_07_0026.png");
+AM.queueDownload("./img/explosion/expl_07_0027.png");
+AM.queueDownload("./img/explosion/expl_07_0028.png");
+AM.queueDownload("./img/explosion/expl_07_0029.png");
+AM.queueDownload("./img/explosion/expl_07_0030.png");
+AM.queueDownload("./img/explosion/expl_07_0031.png");
 
-AM.queueDownload("./img/RobotUnicorn.png");
-AM.queueDownload("./img/guy.jpg");
-AM.queueDownload("./img/mushroomdude.png");
-AM.queueDownload("./img/runningcat.png");
-AM.queueDownload("./img/background.jpg");
+AM.queueDownload("./img/ninja/Throw__000.png");
+AM.queueDownload("./img/ninja/Throw__001.png");
+AM.queueDownload("./img/ninja/Throw__002.png");
+AM.queueDownload("./img/ninja/Throw__003.png");
+AM.queueDownload("./img/ninja/Throw__004.png");
+AM.queueDownload("./img/ninja/Throw__005.png");
+AM.queueDownload("./img/ninja/Throw__006.png");
+AM.queueDownload("./img/ninja/Throw__007.png");
+AM.queueDownload("./img/ninja/Throw__008.png");
+AM.queueDownload("./img/ninja/Throw__009.png");
+
+AM.queueDownload("./img/rocket/rocket_1_0000.png");
+AM.queueDownload("./img/rocket/rocket_1_0001.png");
+AM.queueDownload("./img/rocket/rocket_1_0002.png");
+AM.queueDownload("./img/rocket/rocket_1_0003.png");
+AM.queueDownload("./img/rocket/rocket_1_0004.png");
+AM.queueDownload("./img/rocket/rocket_1_0005.png");
+AM.queueDownload("./img/rocket/rocket_1_0006.png");
+AM.queueDownload("./img/rocket/rocket_1_0007.png");
+AM.queueDownload("./img/rocket/rocket_1_0008.png");
+AM.queueDownload("./img/rocket/rocket_1_0009.png");
+AM.queueDownload("./img/rocket/rocket_1_0010.png");
+AM.queueDownload("./img/rocket/rocket_1_0011.png");
+AM.queueDownload("./img/rocket/rocket_1_0012.png");
+AM.queueDownload("./img/rocket/rocket_1_0013.png");
+AM.queueDownload("./img/rocket/rocket_1_0014.png");
+AM.queueDownload("./img/rocket/rocket_1_0015.png");
+
+AM.queueDownload("./img/ninja/Run__000.png");
+AM.queueDownload("./img/ninja/Run__001.png");
+AM.queueDownload("./img/ninja/Run__002.png");
+AM.queueDownload("./img/ninja/Run__003.png");
+AM.queueDownload("./img/ninja/Run__004.png");
+AM.queueDownload("./img/ninja/Run__005.png");
+AM.queueDownload("./img/ninja/Run__006.png");
+AM.queueDownload("./img/ninja/Run__007.png");
+AM.queueDownload("./img/ninja/Run__008.png");
+AM.queueDownload("./img/ninja/Run__009.png");
+
 AM.queueDownload("./img/background0.png");
-AM.queueDownload("./img/Cartwheel.png");
 
 AM.downloadAll(function () {
     var canvas = document.getElementById("gameWorld");
     var ctx = canvas.getContext("2d");
-
     var gameEngine = new GameEngine();
     gameEngine.init(ctx);
     gameEngine.start();
-
+	var explosionArr = [];
+	explosionArr.push(AM.getAsset("./img/explosion/expl_07_0000.png"));
+	explosionArr.push(AM.getAsset("./img/explosion/expl_07_0001.png"));
+	explosionArr.push(AM.getAsset("./img/explosion/expl_07_0002.png"));
+	explosionArr.push(AM.getAsset("./img/explosion/expl_07_0003.png"));
+	explosionArr.push(AM.getAsset("./img/explosion/expl_07_0004.png"));
+	explosionArr.push(AM.getAsset("./img/explosion/expl_07_0005.png"));
+	explosionArr.push(AM.getAsset("./img/explosion/expl_07_0006.png"));
+	explosionArr.push(AM.getAsset("./img/explosion/expl_07_0007.png"));
+	explosionArr.push(AM.getAsset("./img/explosion/expl_07_0008.png"));
+	explosionArr.push(AM.getAsset("./img/explosion/expl_07_0009.png"));
+	explosionArr.push(AM.getAsset("./img/explosion/expl_07_0010.png"));
+	explosionArr.push(AM.getAsset("./img/explosion/expl_07_0011.png"));
+	explosionArr.push(AM.getAsset("./img/explosion/expl_07_0012.png"));
+	explosionArr.push(AM.getAsset("./img/explosion/expl_07_0013.png"));
+	explosionArr.push(AM.getAsset("./img/explosion/expl_07_0014.png"));
+	explosionArr.push(AM.getAsset("./img/explosion/expl_07_0015.png"));
+	explosionArr.push(AM.getAsset("./img/explosion/expl_07_0016.png"));
+	explosionArr.push(AM.getAsset("./img/explosion/expl_07_0017.png"));
+	explosionArr.push(AM.getAsset("./img/explosion/expl_07_0018.png"));
+	explosionArr.push(AM.getAsset("./img/explosion/expl_07_0019.png"));
+	explosionArr.push(AM.getAsset("./img/explosion/expl_07_0020.png"));
+	explosionArr.push(AM.getAsset("./img/explosion/expl_07_0021.png"));
+	explosionArr.push(AM.getAsset("./img/explosion/expl_07_0022.png"));
+	explosionArr.push(AM.getAsset("./img/explosion/expl_07_0023.png"));
+	explosionArr.push(AM.getAsset("./img/explosion/expl_07_0024.png"));
+	explosionArr.push(AM.getAsset("./img/explosion/expl_07_0025.png"));
+	explosionArr.push(AM.getAsset("./img/explosion/expl_07_0026.png"));
+	explosionArr.push(AM.getAsset("./img/explosion/expl_07_0027.png"));
+	explosionArr.push(AM.getAsset("./img/explosion/expl_07_0028.png"));
+	explosionArr.push(AM.getAsset("./img/explosion/expl_07_0029.png"));
+	explosionArr.push(AM.getAsset("./img/explosion/expl_07_0030.png"));
+	explosionArr.push(AM.getAsset("./img/explosion/expl_07_0031.png"));
+	var tninjaArr = [];
+	tninjaArr.push(AM.getAsset("./img/ninja/Throw__000.png"));
+	tninjaArr.push(AM.getAsset("./img/ninja/Throw__001.png"));
+	tninjaArr.push(AM.getAsset("./img/ninja/Throw__002.png"));
+	tninjaArr.push(AM.getAsset("./img/ninja/Throw__003.png"));
+	tninjaArr.push(AM.getAsset("./img/ninja/Throw__004.png"));
+	tninjaArr.push(AM.getAsset("./img/ninja/Throw__005.png"));
+	tninjaArr.push(AM.getAsset("./img/ninja/Throw__006.png"));
+	tninjaArr.push(AM.getAsset("./img/ninja/Throw__007.png"));
+	tninjaArr.push(AM.getAsset("./img/ninja/Throw__008.png"));
+	tninjaArr.push(AM.getAsset("./img/ninja/Throw__009.png"));
+	var rocketArr = [];
+	rocketArr.push(AM.getAsset("./img/rocket/rocket_1_0000.png"));
+	rocketArr.push(AM.getAsset("./img/rocket/rocket_1_0001.png"));
+	rocketArr.push(AM.getAsset("./img/rocket/rocket_1_0002.png"));
+	rocketArr.push(AM.getAsset("./img/rocket/rocket_1_0003.png"));
+	rocketArr.push(AM.getAsset("./img/rocket/rocket_1_0004.png"));
+	rocketArr.push(AM.getAsset("./img/rocket/rocket_1_0005.png"));
+	rocketArr.push(AM.getAsset("./img/rocket/rocket_1_0006.png"));
+	rocketArr.push(AM.getAsset("./img/rocket/rocket_1_0007.png"));
+	rocketArr.push(AM.getAsset("./img/rocket/rocket_1_0008.png"));
+	rocketArr.push(AM.getAsset("./img/rocket/rocket_1_0009.png"));
+	rocketArr.push(AM.getAsset("./img/rocket/rocket_1_0010.png"));
+	rocketArr.push(AM.getAsset("./img/rocket/rocket_1_0011.png"));
+	rocketArr.push(AM.getAsset("./img/rocket/rocket_1_0012.png"));
+	rocketArr.push(AM.getAsset("./img/rocket/rocket_1_0013.png"));
+	rocketArr.push(AM.getAsset("./img/rocket/rocket_1_0014.png"));
+	rocketArr.push(AM.getAsset("./img/rocket/rocket_1_0015.png"));
+	var ninjaRun = [];
+	ninjaRun.push(AM.getAsset("./img/ninja/Run__000.png"));
+	ninjaRun.push(AM.getAsset("./img/ninja/Run__001.png"));
+	ninjaRun.push(AM.getAsset("./img/ninja/Run__002.png"));
+	ninjaRun.push(AM.getAsset("./img/ninja/Run__003.png"));
+	ninjaRun.push(AM.getAsset("./img/ninja/Run__004.png"));
+	ninjaRun.push(AM.getAsset("./img/ninja/Run__005.png"));
+	ninjaRun.push(AM.getAsset("./img/ninja/Run__006.png"));
+	ninjaRun.push(AM.getAsset("./img/ninja/Run__007.png"));
+	ninjaRun.push(AM.getAsset("./img/ninja/Run__008.png"));
+	ninjaRun.push(AM.getAsset("./img/ninja/Run__009.png"));
     gameEngine.addEntity(new Background(gameEngine, AM.getAsset("./img/background0.png")));
-    //gameEngine.addEntity(new MushroomDude(gameEngine, AM.getAsset("./img/mushroomdude.png")));
-    //gameEngine.addEntity(new Cheetah(gameEngine, AM.getAsset("./img/runningcat.png")));
-    //gameEngine.addEntity(new Guy(gameEngine, AM.getAsset("./img/guy.jpg")));
-	gameEngine.addEntity(new Cartwheel(gameEngine, AM.getAsset("./img/Cartwheel.png")));
+	gameEngine.addEntity(new ninja(gameEngine, ninjaRun));
+	gameEngine.addEntity(new rocket(gameEngine, rocketArr));
+	gameEngine.addEntity(new tninja(gameEngine, tninjaArr));
+	gameEngine.addEntity(new explosion(gameEngine, explosionArr));
 
     console.log("All Done!");
 });
